@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>くらしの家計簿</title>
+    <!-- デザインと画面操作の処理は、読みやすいよう別ファイルに分けています。 -->
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="/js/dashboard.js" defer></script>
+</head>
+<body>
+    <!-- ページ内の各機能へ移動するナビゲーションと、設定・ログアウトを配置します。 -->
+    <header class="topbar">
+        <div class="topbar-inner">
+            <a class="brand" href="#home">
+                <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="currentColor" d="M3 10.7 12 3l9 7.7v9.1a1.2 1.2 0 0 1-1.2 1.2H14v-6.2h-4v6.2H4.2A1.2 1.2 0 0 1 3 19.8z" />
+                </svg>
+                <span>くらしの家計簿</span>
+            </a>
+
+            <nav class="nav-links" aria-label="メインメニュー">
+                <a class="active" href="#home">
+                    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="currentColor" d="M3 10.7 12 3l9 7.7v9.1a1.2 1.2 0 0 1-1.2 1.2H14v-6.2h-4v6.2H4.2A1.2 1.2 0 0 1 3 19.8z" />
+                    </svg>
+                    ホーム
+                </a>
+                <a href="#recordSection">
+                    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="none" stroke="currentColor" stroke-width="1.8" d="M6 3.8h9l4 4v12.4H6zM15 4v4h4M9 12h7M9 16h7" />
+                    </svg>
+                    収支の記録
+                </a>
+                <a href="#analysisSection">
+                    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="currentColor" d="M4 13h4v7H4zm6-7h4v14h-4zm6 4h4v10h-4z" />
+                    </svg>
+                    集計
+                </a>
+                <a href="/import.html" id="importLink">CSVを取り込む</a>
+                <button
+                    class="theme-toggle"
+                    id="themeToggle"
+                    type="button"
+                    aria-label="ダークモードに切り替える"
+                    aria-pressed="false">
+                    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="currentColor" d="M20.8 15.3A8.6 8.6 0 0 1 8.7 3.2a8.8 8.8 0 1 0 12.1 12.1z" />
+                    </svg>
+                    <span id="themeToggleLabel">ダークモード</span>
+                </button>
+                <span class="account-name" id="currentUser"></span>
+                <button class="logout-button" id="logoutButton" type="button">ログアウト</button>
+            </nav>
+        </div>
+    </header>
+
+    <main id="home">
+        <!-- 公開デモのときだけ、実データを入力しないよう注意を表示します。 -->
+        <p class="demo-notice" id="demoNotice" role="status" hidden>
+            これはサンプル用の公開デモです。実名、実際の収入・支出、パスワードなどの大切な情報は入力しないでください。架空のデータでお試しください。
+        </p>
+        <h1>くらしの家計簿</h1>
+
+        <!-- 表示対象の月を選ぶと、その月の集計と一覧に切り替わります。 -->
+        <section class="month-panel">
+            <label for="monthFilter">表示する月</label>
+            <div class="month-filter">
+                <input id="monthFilter" type="month">
+            </div>
+        </section>
+
+        <!-- 選択月の支出・収入と、月末時点の貯金残高を表示します。 -->
+        <section class="summary" aria-label="選択月の収支">
+            <div class="summary-card summary-expense">
+                <div class="summary-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M3 7a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v2h-4a4 4 0 0 0 0 8h4v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zm13 3h5v5h-5a2.5 2.5 0 0 1 0-5M6 8h8V7H6z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="label">選択月の支出</div>
+                    <strong class="value" id="monthlyTotal">¥0</strong>
+                    <div class="expense-count">
+                        記録した件数: <span id="expenseCount">0件</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-card summary-income">
+                <div class="summary-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M12 3c4 0 7 1.3 7 3s-3 3-7 3-7-1.3-7-3 3-3 7-3m-7 6.5c1.5 1 4.2 1.5 7 1.5s5.5-.5 7-1.5V13c0 1.7-3 3-7 3s-7-1.3-7-3zm0 5.5c1.5 1 4.2 1.5 7 1.5s5.5-.5 7-1.5v3c0 1.7-3 3-7 3s-7-1.3-7-3z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="label">選択月の収入</div>
+                    <strong class="value" id="incomeTotal">¥0</strong>
+                </div>
+            </div>
+
+            <div class="summary-card summary-balance">
+                <div class="summary-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M12 3a8 8 0 0 0-7.8 6H3v8h2.1A8 8 0 1 0 12 3m0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12m-1 2v1.2c-1.1.2-1.8.9-1.8 1.9 0 1.2.9 1.7 2.5 2 1 .2 1.3.4 1.3.8s-.4.7-1.2.7c-.8 0-1.5-.3-2-.8l-1 1.2c.6.6 1.3 1 2.2 1.1V17h1.5v-1.2c1.2-.2 2-.9 2-2 0-1.2-.9-1.7-2.5-2-1-.2-1.4-.4-1.4-.8s.4-.6 1.1-.6c.7 0 1.2.2 1.7.6l.9-1.3c-.5-.4-1.1-.7-1.8-.8V7z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="label">月末時点の貯金残高</div>
+                    <strong class="value" id="savingsBalance">¥0</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- 支出と収入の入力フォームです。送信処理は dashboard.js が担当します。 -->
+        <div class="entry-grid" id="recordSection">
+            <section class="panel">
+                <div class="panel-heading">
+                    <span class="heading-icon expense-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M3 7a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v2h-4a4 4 0 0 0 0 8h4v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zm13 3h5v5h-5a2.5 2.5 0 0 1 0-5" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h2>支出を記録</h2>
+                        <p class="subtext">使ったお金を記録しましょう</p>
+                    </div>
+                </div>
+
+                <form id="expenseForm">
+                    <div class="fields">
+                        <div>
+                            <label for="date">日付</label>
+                            <input id="date" type="date" required>
+                        </div>
+                        <div>
+                            <label for="category">カテゴリー</label>
+                            <select id="category">
+                                <option>食費</option>
+                                <option>住居費</option>
+                                <option>光熱費</option>
+                                <option>日用品</option>
+                                <option>交通費</option>
+                                <option>娯楽・趣味</option>
+                                <option>娯楽</option>
+                                <option>その他</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="amount">金額</label>
+                            <input id="amount" type="number" min="1" placeholder="例 5000" required>
+                        </div>
+                        <div class="field-wide">
+                            <label for="memo">内容（任意）</label>
+                            <input id="memo" type="text" placeholder="例：スーパーでの買い物">
+                        </div>
+                    </div>
+                    <button class="submit-button" id="addButton" type="submit">＋　支出を追加</button>
+                    <p class="message" id="message" aria-live="polite"></p>
+                </form>
+            </section>
+
+            <section class="panel">
+                <div class="panel-heading">
+                    <span class="heading-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M12 3c4 0 7 1.3 7 3s-3 3-7 3-7-1.3-7-3 3-3 7-3m-7 6.5c1.5 1 4.2 1.5 7 1.5s5.5-.5 7-1.5V13c0 1.7-3 3-7 3s-7-1.3-7-3zm0 5.5c1.5 1 4.2 1.5 7 1.5s5.5-.5 7-1.5v3c0 1.7-3 3-7 3s-7-1.3-7-3z" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h2>収入を記録</h2>
+                        <p class="subtext">入ったお金を記録しましょう</p>
+                    </div>
+                </div>
+
+                <form id="incomeForm">
+                    <div class="fields">
+                        <div>
+                            <label for="incomeDate">日付</label>
+                            <input id="incomeDate" type="date" required>
+                        </div>
+                        <div>
+                            <label for="incomeCategory">カテゴリー</label>
+                            <select id="incomeCategory">
+                                <option>給与</option>
+                                <option>副業</option>
+                                <option>臨時収入</option>
+                                <option>その他</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="incomeAmount">金額</label>
+                            <input id="incomeAmount" type="number" min="1" placeholder="例 100000" required>
+                        </div>
+                        <div class="field-wide">
+                            <label for="incomeMemo">内容（任意）</label>
+                            <input id="incomeMemo" type="text" placeholder="例：4月の給与">
+                        </div>
+                    </div>
+                    <button class="submit-button" id="addIncomeButton" type="submit">＋　収入を追加</button>
+                    <p class="message" id="incomeMessage" aria-live="polite"></p>
+                </form>
+            </section>
+        </div>
+
+        <!-- カテゴリーごとの支出合計を、円グラフと凡例で表示します。 -->
+        <section class="panel" id="analysisSection">
+            <div class="panel-heading">
+                <span class="heading-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M4 13h4v7H4zm6-7h4v14h-4zm6 4h4v10h-4z" />
+                    </svg>
+                </span>
+                <div>
+                    <h2>カテゴリー別の合計</h2>
+                    <p class="subtext">選択した月の支出をカテゴリーごとに集計しています</p>
+                </div>
+            </div>
+            <div class="chart-layout">
+                <canvas
+                    id="categoryChart"
+                    class="pie-chart"
+                    width="360"
+                    height="360"
+                    role="img"
+                    aria-label="カテゴリー別支出の円グラフ"></canvas>
+                <ul id="categoryTotals"></ul>
+            </div>
+        </section>
+
+        <!-- 選択月の支出・収入を一覧表示します。行の内容は dashboard.js が追加します。 -->
+        <div class="records-grid">
+            <section class="panel" id="expenseRecords">
+                <div class="panel-heading record-heading">
+                    <div class="record-title">
+                        <span class="heading-icon expense-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M3 7a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v2h-4a4 4 0 0 0 0 8h4v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zm13 3h5v5h-5a2.5 2.5 0 0 1 0-5" />
+                            </svg>
+                        </span>
+                        <div>
+                            <h2>支出一覧</h2>
+                            <p class="subtext">選択した月の支出の記録です</p>
+                        </div>
+                    </div>
+                    <a class="view-all" href="#expenseRows">すべて見る　›</a>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>日付</th>
+                                <th>内容</th>
+                                <th>カテゴリー</th>
+                                <th>金額</th>
+                                <th>削除</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseRows"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="panel" id="incomeRecords">
+                <div class="panel-heading record-heading">
+                    <div class="record-title">
+                        <span class="heading-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M12 3c4 0 7 1.3 7 3s-3 3-7 3-7-1.3-7-3 3-3 7-3m-7 6.5c1.5 1 4.2 1.5 7 1.5s5.5-.5 7-1.5V13c0 1.7-3 3-7 3s-7-1.3-7-3zm0 5.5c1.5 1 4.2 1.5 7 1.5s5.5-.5 7-1.5v3c0 1.7-3 3-7 3s-7-1.3-7-3z" />
+                            </svg>
+                        </span>
+                        <div>
+                            <h2>収入一覧</h2>
+                            <p class="subtext">選択した月の収入の記録です</p>
+                        </div>
+                    </div>
+                    <a class="view-all" href="#incomeRows">すべて見る　›</a>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>日付</th>
+                                <th>内容</th>
+                                <th>カテゴリー</th>
+                                <th>金額</th>
+                            </tr>
+                        </thead>
+                        <tbody id="incomeRows"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

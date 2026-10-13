@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ログイン | くらしの家計簿</title>
+    <link rel="stylesheet" href="/css/login.css">
+    <script src="/js/login.js" defer></script>
+</head>
+<body>
+<main>
+    <h1>くらしの家計簿</h1>
+    <p>自分のアカウントにログインしてください。</p>
+    <p class="demo-notice" id="demoNotice" role="status" hidden>公開デモです。実際の家計情報や、ほかのサービスで使っているパスワードは入力しないでください。</p>
+    <p class="notice" id="notice" aria-live="polite"></p>
+    <form method="post" action="/login">
+        <label for="username">ユーザー名</label>
+        <input id="username" name="username" autocomplete="username" required>
+        <label for="password">パスワード</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <input id="csrf" type="hidden" name="_csrf">
+        <button type="submit">ログイン</button>
+    </form>
+    <p>アカウントがない場合は、<a href="/signup.html">新規登録</a>してください。</p>
+</main>
+
+</body>
+</html>

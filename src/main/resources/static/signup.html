@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>新規登録 | くらしの家計簿</title>
+    <link rel="stylesheet" href="/css/signup.css">
+    <script src="/js/signup.js" defer></script>
+</head>
+<body>
+<main>
+    <h1>アカウントを作成</h1>
+    <p>登録した家計データは、このアカウントに保存されます。</p>
+    <p class="demo-notice" id="demoNotice" role="status" hidden>公開デモです。実際の家計情報や、ほかのサービスで使っているパスワードは入力しないでください。</p>
+    <form id="signupForm">
+        <label for="username">ユーザー名</label>
+        <input id="username" autocomplete="username" minlength="3" maxlength="30" required>
+        <p>半角英数字と . _ - が使えます。</p>
+        <label for="password">パスワード</label>
+        <input id="password" type="password" autocomplete="new-password" minlength="12" maxlength="72" required>
+        <p>12文字以上にしてください。</p>
+        <button id="submitButton" type="submit">アカウントを作成</button>
+        <p class="notice" id="notice" aria-live="polite"></p>
+    </form>
+    <p>登録済みの場合は、<a href="/login.html">ログイン</a>してください。</p>
+</main>
+
+</body>
+</html>

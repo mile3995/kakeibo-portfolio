@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CSVの取り込み | くらしの家計簿</title>
+    <link rel="stylesheet" href="/css/import.css">
+    <script src="/js/import.js" defer></script>
+</head>
+<body>
+<header><a href="/">くらしの家計簿</a></header>
+<main>
+    <section class="panel">
+        <h1>以前の記録を取り込む</h1>
+        <p class="warning" id="demoNotice" hidden>この公開デモではCSV取り込みを利用できません。実際の家計データをアップロードしないでください。</p>
+        <p>バックアップしたCSVを選ぶと、取り込み前に件数と合計を確認できます。元のCSVは変更しません。</p>
+        <p class="target" id="targetAccount">ログイン中のアカウントを確認しています…</p>
+        <p>取り込み先を間違えないよう、普段使うアカウントでログインしていることを確認してください。</p>
+    </section>
+
+    <section class="panel" id="importPanel">
+        <h2>バックアップCSVを選択</h2>
+        <form id="importForm">
+            <label for="expensesFile">支出のCSV（expenses.csv）</label>
+            <input id="expensesFile" name="expenses" type="file" accept=".csv,text/csv">
+            <label for="incomesFile">収入のCSV（incomes.csv）</label>
+            <input id="incomesFile" name="incomes" type="file" accept=".csv,text/csv">
+            <button id="previewButton" type="button">内容を確認する</button>
+            <p id="message" class="notice" aria-live="polite"></p>
+        </form>
+    </section>
+
+    <section class="panel" id="previewPanel" hidden>
+        <h2>取り込み内容の確認</h2>
+        <div class="summary">
+            <div>支出の件数<strong id="expenseCount">0件</strong><span id="expenseTotal">合計 ¥0</span></div>
+            <div>収入の件数<strong id="incomeCount">0件</strong><span id="incomeTotal">合計 ¥0</span></div>
+        </div>
+        <p id="duplicateWarning" class="warning" hidden>このCSVは現在のアカウントに取り込み済みです。二重登録を防ぐため、確定できません。</p>
+        <p>内容が合っているときだけ確定してください。確定後、記録はこの画面に表示されたアカウントの家計簿に追加されます。</p>
+        <button id="confirmButton" type="button" disabled>この内容で取り込む</button>
+        <p id="result" class="notice" aria-live="polite"></p>
+    </section>
+</main>
+
+</body>
+</html>

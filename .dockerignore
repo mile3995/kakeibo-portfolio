@@ -1,0 +1,10 @@
+.git
+.m2
+.vscode
+.idea
+target
+data
+*.csv
+.env
+.env.*
+!.env.example
