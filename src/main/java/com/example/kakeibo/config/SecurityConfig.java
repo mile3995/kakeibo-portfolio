@@ -58,6 +58,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/login.html",
                                 "/signup.html",
+                                "/css/**",
+                                "/js/**",
                                 "/api/auth/csrf",
                                 "/api/auth/register",
                                 "/api/app-config",
