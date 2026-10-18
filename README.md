@@ -14,10 +14,14 @@ Java と Spring Boot で作成した、収入と支出を管理する Web アプ
 
 ### スマートフォン表示
 
-スマートフォンでも、月ごとの収支や貯金残高を確認できます。
+スマートフォンでのホーム、入力フォーム、カテゴリー別集計、一覧画面です。
 
 <p align="center">
-  <img src="docs/images/スマホスクリーンショット.png" alt="スマートフォンで表示した家計簿のホーム画面" width="360">
+  <img src="docs/images/スマホスクリーンショット.png" alt="スマートフォンのホーム画面と月別集計" width="320">
+  <img src="docs/images/スマホスクリーンショット2.png" alt="スマートフォンの支出入力フォーム" width="320">
+  <img src="docs/images/スマホスクリーンショット3.png" alt="スマートフォンの収入入力フォーム" width="320">
+  <img src="docs/images/スマホスクリーンショット4.png" alt="スマートフォンのカテゴリー別円グラフ" width="320">
+  <img src="docs/images/スマホスクリーンショット5.png" alt="スマートフォンの支出・収入一覧" width="320">
 </p>
 
 ## アプリについて
