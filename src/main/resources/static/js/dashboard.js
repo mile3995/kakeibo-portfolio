@@ -1,3 +1,5 @@
+import { summarizeMonth } from "./monthlySummary.mjs";
+
 // 画面の入力欄と操作ボタンを取得します。
 const form = document.getElementById("expenseForm");
 const dateInput = document.getElementById("date");
@@ -121,26 +123,10 @@ function categoryPill(category) {
     return pill;
 }
 // 選択月の支出合計、カテゴリーグラフ、支出一覧を更新します。
-function showExpenses(expenses) {
-    const selectedMonth = monthFilter.value || todayAsText().slice(0, 7);
-    const monthExpenses = expenses.filter(expense =>
-        expense.date.startsWith(selectedMonth)
-    );
-    const monthlyTotal = monthExpenses.reduce(
-        (sum, expense) => sum + Number(expense.amount),
-        0
-    );
+function showExpenses(monthExpenses, monthlyTotal, categoryTotals) {
 
     document.getElementById("monthlyTotal").textContent = yen(monthlyTotal);
     document.getElementById("expenseCount").textContent = monthExpenses.length + "件";
-    const categoryTotals = new Map();
-
-    for (const expense of monthExpenses) {
-        const category = expense.category || "未分類";
-        const currentTotal = categoryTotals.get(category) || 0;
-        categoryTotals.set(category, currentTotal + Number(expense.amount));
-    }
-
     const categoryList = document.getElementById("categoryTotals");
     categoryList.replaceChildren();
     const totalForChart = [...categoryTotals.values()]
@@ -297,7 +283,6 @@ async function loadExpenses() {
     }
 
     const expenses = await expenseResponse.json();
-    showExpenses(expenses);
 
     const incomeResponse = await apiRequest("/api/incomes");
 
@@ -307,13 +292,12 @@ async function loadExpenses() {
 
     const incomes = await incomeResponse.json();
     const selectedMonth = monthFilter.value || todayAsText().slice(0, 7);
-    const monthIncomes = incomes.filter(income =>
-        income.date.startsWith(selectedMonth)
-    );
+    const summary = summarizeMonth(expenses, incomes, selectedMonth);
+    showExpenses(summary.monthExpenses, summary.expenseTotal, summary.categoryTotals);
     const incomeRows = document.getElementById("incomeRows");
     incomeRows.replaceChildren();
 
-    const sortedIncomes = [...monthIncomes].sort((a, b) =>
+    const sortedIncomes = [...summary.monthIncomes].sort((a, b) =>
         (b.date + b.id).localeCompare(a.date + a.id)
     );
 
@@ -337,20 +321,9 @@ async function loadExpenses() {
         row.appendChild(amountCell);
         incomeRows.appendChild(row);
     }
-    const totalIncome = monthIncomes.reduce(
-        (sum, income) => sum + Number(income.amount),
-        0
-    );
-    const incomeThroughMonth = incomes
-        .filter(income => income.date.slice(0, 7) <= selectedMonth)
-        .reduce((sum, income) => sum + Number(income.amount), 0);
-    const expensesThroughMonth = expenses
-        .filter(expense => expense.date.slice(0, 7) <= selectedMonth)
-        .reduce((sum, expense) => sum + Number(expense.amount), 0);
-
-    document.getElementById("incomeTotal").textContent = yen(totalIncome);
+    document.getElementById("incomeTotal").textContent = yen(summary.incomeTotal);
     document.getElementById("savingsBalance").textContent =
-        yen(incomeThroughMonth - expensesThroughMonth);
+        yen(summary.savingsBalance);
 }
 
 // 支出フォームを送信し、保存後に一覧を読み直します。
@@ -448,3 +421,4 @@ fetch("/api/app-config")
         }
     })
     .catch(() => {});
+
